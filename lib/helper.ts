@@ -17,6 +17,26 @@ export function getDirectDownloadLink(url: string): string | null {
     }
 }
 
+export function getOriginalGoogleLink(directLink: string): string | null {
+    const driveDownloadRegex = /https:\/\/drive\.google\.com\/uc\?export=download&id=([^&]+)/;
+    const docsDownloadRegex = /https:\/\/docs\.google\.com\/document\/d\/([^/]+)\/export\?format=pdf/;
+
+    const driveMatch = directLink.match(driveDownloadRegex);
+    const docsMatch = directLink.match(docsDownloadRegex);
+
+    if (driveMatch) {
+        // Convert direct download link back to Google Drive file link
+        return `https://drive.google.com/file/d/${driveMatch[1]}/view`;
+    } else if (docsMatch) {
+        // Convert direct download link back to Google Docs link
+        return `https://docs.google.com/document/d/${docsMatch[1]}/edit`;
+    } else {
+        console.error("Invalid direct download link.");
+        return null;
+    }
+}
+
+
 export const debounce = (func: Function, delay: number) => {
     let timeoutId: NodeJS.Timeout
     return (...args: any[]) => {

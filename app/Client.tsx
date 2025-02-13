@@ -96,46 +96,12 @@ import { ComposeWindow } from "@/components/compose-window"
 import { VerificationPage } from "@/components/verification-page"
 import { verifyOTP } from "@/lib/security"
 import { useUser } from "@/hooks/userContext"
-import Group from "@/components/group/Group"
+import Group, { GroupType } from "@/components/group/Group"
 import UserList from "@/components/user/UserList"
 import { User } from "@/types/User"
+import { EmailType } from "@/types/Email"
 
-const mockEmails = [
-    {
-        id: "1",
-        subject: "Weekly Team Update",
-        sender: "Sarah Johnson",
-        senderEmail: "sarah.j@company.com",
-        content: `
-      <p>Hi team,</p>
-      <p>Here's a summary of what we accomplished this week:</p>
-      <ul>
-        <li>Completed the initial design review</li>
-        <li>Set up the development environment</li>
-        <li>Started working on the core features</li>
-      </ul>
-      <p>Great work everyone!</p>
-      <p>Best regards,<br>Sarah</p>
-    `,
-        date: new Date("2024-02-10T10:00:00"),
-        unread: true,
-        labels: ["Team", "Important"],
-    },
-    {
-        id: "2",
-        subject: "Project Deadline Reminder",
-        sender: "Project Management",
-        senderEmail: "pm@company.com",
-        content: `
-      <p>Hello,</p>
-      <p>This is a reminder that the project deadline is approaching. Please ensure all deliverables are submitted by the end of the week.</p>
-      <p>If you have any questions or concerns, don't hesitate to reach out.</p>
-      <p>Regards,<br>Project Management Team</p>
-    `,
-        date: new Date("2024-02-09T15:30:00"),
-        labels: ["Work"],
-    },
-]
+
 
 interface ComposeWindowState {
     isOpen: boolean
@@ -145,8 +111,10 @@ interface ComposeWindowState {
 
 interface ClientProps {
     userList: User[]
+    emails: EmailType[]
+    groups: GroupType[]
 }
-export default function Client({ userList }: ClientProps) {
+export default function Client({ userList, emails, groups }: ClientProps) {
     const [makeGroup, setMakeGroup] = useState(false);
     const [users, setUsers] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null)
@@ -226,21 +194,25 @@ export default function Client({ userList }: ClientProps) {
         setComposeWindow((prev) => ({ ...prev, isMinimized: !prev.isMinimized }))
     }
 
-    const selectedEmailData = mockEmails.find((email) => email.id === selectedEmail)
+    const onResend = (id: string) => {
+
+    }
+
+    const selectedEmailData = emails.find((email) => email.id === selectedEmail)
 
     return (
         <>
             <div className="grid h-screen relative" style={{ gridTemplateColumns: "280px minmax(0, 1fr) minmax(0, 1fr)" }}>
                 <Sidebar onCompose={handleCompose} onGroup={handleMakeGroup} onUsers={handleUsers} />
                 <div className="border-l border-r overflow-hidden">
-                    <EmailList emails={mockEmails} selectedEmail={selectedEmail} onSelectEmail={setSelectedEmail} />
+                    <EmailList emails={emails} selectedEmail={selectedEmail} onSelectEmail={setSelectedEmail} />
                 </div>
                 <div className="overflow-auto">
-                    <EmailView email={selectedEmailData} />
+                    <EmailView email={selectedEmailData} onResend={onResend} />
                 </div>
                 {makeGroup && (
                     <div className="absolute left-0 right-0 mx-auto max-w-[500px]">
-                        <Group userList={userList} makeGroupRef={makeGroupRef} />
+                        <Group userList={userList} makeGroupRef={makeGroupRef} groups={groups} />
                     </div>
                 )}
                 {users && (

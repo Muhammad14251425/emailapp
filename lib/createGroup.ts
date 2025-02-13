@@ -25,3 +25,17 @@ export async function createGroup(groupData: { groupName: string; emails: string
         return { success: false, message: "Failed to create group" }
     }
 }
+
+export async function getGroups() {
+    try {
+        const groups = await Group.find({}).lean()
+        return groups.map((group) => ({
+            id: group._id!.toString(),
+            name: group.name as string,
+            emails:group.emails as string[]
+        }))
+    } catch (error) {
+        console.error("Failed to fetch groups:", error)
+        return []
+    }
+}
