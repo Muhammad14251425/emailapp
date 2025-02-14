@@ -190,7 +190,7 @@ export function CreateGroup({
         </div>
         <div>
           <Label>Select Users</Label>
-          <div className="mt-2 space-y-3 max-h-[250px] overflow-y-auto">
+          <div className="mt-2 space-y-3 max-h-[250px] overflow-y-auto custom-scrollbar">
             {users.map((user) => (
               <div key={user.email} className="flex items-center">
                 <Checkbox
