@@ -1,10 +1,10 @@
 import mongoose from "mongoose"
 
-if (!process.env.MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable inside .env")
-}
+// if (!process.env.MONGODB_URI) {
+//   throw new Error("Please define the MONGODB_URI environment variable inside .env")
+// }
 
-const MONGODB_URI: string = process.env.MONGODB_URI
+const MONGODB_URI: string = "mongodb+srv://muhammadfawwad88:fawwad123@cluster0.5k3px.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 /**
  * Global is used here to maintain a cached connection across hot reloads
