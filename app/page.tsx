@@ -4,6 +4,8 @@ import { fetchUsers } from '@/lib/userActions'
 import { getEmails } from '@/lib/getEmails'
 import { getGroups } from '@/lib/createGroup'
 
+export const revalidate = 0;
+
 const EmailSender = async () => {
 
   const users = await fetchUsers();
