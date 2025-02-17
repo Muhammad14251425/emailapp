@@ -100,6 +100,8 @@ import Group, { GroupType } from "@/components/group/Group"
 import UserList from "@/components/user/UserList"
 import { User } from "@/types/User"
 import { EmailType } from "@/types/Email"
+import { resendEmail, sendEmail } from "@/lib/sendEmail"
+import { toast } from "@/hooks/use-toast"
 
 
 
@@ -117,6 +119,7 @@ interface ClientProps {
 export default function Client({ userList, emails, groups }: ClientProps) {
     const [makeGroup, setMakeGroup] = useState(false);
     const [users, setUsers] = useState(false);
+    const [sending, setIsSending] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null)
     const [selectedEmail, setSelectedEmail] = useState<string>()
     const [composeWindow, setComposeWindow] = useState<ComposeWindowState>({
@@ -171,9 +174,9 @@ export default function Client({ userList, emails, groups }: ClientProps) {
         }
     }, [makeGroup])
 
-    if (!isVerified) {
-        return <VerificationPage onVerify={handleVerify} isLoading={isVerifying} error={verificationError} />
-    }
+    // if (!isVerified) {
+    //     return <VerificationPage onVerify={handleVerify} isLoading={isVerifying} error={verificationError} />
+    // }
 
     const handleMakeGroup = () => {
         setMakeGroup(true)
@@ -194,8 +197,33 @@ export default function Client({ userList, emails, groups }: ClientProps) {
         setComposeWindow((prev) => ({ ...prev, isMinimized: !prev.isMinimized }))
     }
 
-    const onResend = (id: string) => {
+    const onResend = async (email: EmailType) => {
+        setIsSending(true);
+        try {
+            const result = await resendEmail(email)
 
+            if (result.success) {
+                toast({
+                    title: "Success",
+                    description: `Email sent to ${result.recipients!.join(", ")}`,
+                })
+            }
+            else if (result.authUrl) {
+                // If we need authentication, redirect to the auth URL
+                window.location.href = result.authUrl
+            }
+            else {
+                throw new Error(result.message)
+            }
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: error instanceof Error ? error.message : "Failed to reSend email",
+                variant: "destructive",
+            })
+        } finally {
+            setIsSending(false)
+        }
     }
 
     const selectedEmailData = emails.find((email) => email.id === selectedEmail)
@@ -208,7 +236,7 @@ export default function Client({ userList, emails, groups }: ClientProps) {
                     <EmailList emails={emails} selectedEmail={selectedEmail} onSelectEmail={setSelectedEmail} />
                 </div>
                 <div className="overflow-auto">
-                    <EmailView email={selectedEmailData} onResend={onResend} />
+                    <EmailView email={selectedEmailData} onResend={onResend} sending={sending} />
                 </div>
                 {makeGroup && (
                     <div className="absolute left-0 right-0 mx-auto max-w-[500px]">

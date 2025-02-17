@@ -72,10 +72,10 @@
 
 "use client"
 
-import { formatDistanceToNow } from "date-fns"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import type { EmailType } from "@/types/Email"
+import { formatDistanceToNow } from "date-fns"
 
 interface EmailListProps {
   selectedEmail?: string

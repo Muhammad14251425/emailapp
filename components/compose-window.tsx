@@ -195,14 +195,19 @@ export function ComposeWindow({ onClose, minimized = false, onMinimize, onMaximi
       if (result.success) {
         toast({
           title: "Success",
-          description: `Email sent to ${result.recipients.join(", ")}`,
+          description: `Email sent to ${result.recipients!.join(", ")}`,
         })
         // Reset form
         setSubject("")
         setContent("")
         setAttachments([])
         setSelectedTags([])
-      } else {
+      } 
+      else if (result.authUrl) {
+        // If we need authentication, redirect to the auth URL
+        window.location.href = result.authUrl
+      }
+      else {
         throw new Error(result.message)
       }
     } catch (error) {

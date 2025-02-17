@@ -102,7 +102,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { formatDistanceToNow } from "date-fns"
-import { Reply, Forward, MoreVertical, Star, Archive, Trash, Send, Paperclip } from "lucide-react"
+import { Reply, Forward, MoreVertical, Star, Archive, Trash, Send, Paperclip, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -112,10 +112,11 @@ import { getOriginalGoogleLink } from "@/lib/helper"
 
 interface EmailViewProps {
   email: EmailType | undefined
-  onResend: (id: string) => void
+  sending: boolean
+  onResend: (email: EmailType) => void
 }
 
-export function EmailView({ email, onResend }: EmailViewProps) {
+export function EmailView({ email, onResend, sending }: EmailViewProps) {
   if (!email) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -179,9 +180,9 @@ export function EmailView({ email, onResend }: EmailViewProps) {
               <a
                 target="_blank"
                 rel="noopener noreferrer"
-                key={index} 
+                key={index}
                 href={attachment.path && getOriginalGoogleLink(attachment.path) || ""}
-                >
+              >
                 <Badge variant="secondary" className="flex items-center gap-1">
                   <Paperclip className="h-3 w-3" />
                   {attachment.filename || `Attachment ${index + 1}`}
@@ -199,8 +200,8 @@ export function EmailView({ email, onResend }: EmailViewProps) {
             <Forward className="h-4 w-4" /> Forward
           </Button>
           {email.status === "failed" && (
-            <Button variant="destructive" className="gap-2" onClick={() => onResend(email.id)}>
-              <Send className="h-4 w-4" /> Resend
+            <Button disabled={sending} variant="destructive" className="gap-2" onClick={() => onResend(email)}>
+              {sending ? (<div className="flex items-center"><Loader2 className="animate-spin" /></div>) : (<span className="flex items-center gap-2"><Send className="h-4 w-4" /> Resend</span>)}
             </Button>
           )}
         </div>
