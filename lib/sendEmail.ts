@@ -351,116 +351,130 @@ export async function sendEmail(emailData: EmailData) {
     }
   }
 
-  console.log(accessToken)
-  console.log(refreshToken)
-
-  // let transporter
-  // try {
-  //   transporter = await getGmailTransporter({
-  //     access_token: accessToken.value,
-  //     refresh_token: refreshToken.value,
-  //   })
-  // } catch (error) {
-  //   console.error("Failed to create Gmail transporter:", error)
-  //   return {
-  //     success: false,
-  //     message: "Failed to initialize email service. Please try again later.",
-  //     recipients: [],
-  //   }
-  // }
-
-  // const { recipients, subject, content, attachments } = emailData
-  // const totalBatches = Math.ceil(recipients.length / BATCH_SIZE)
-  // const sentRecipients: string[] = []
-  // let emailStatus: "send" | "failed" = "send"
-
-  // try {
-  //   for (let i = 0; i < totalBatches; i++) {
-  //     const start = i * BATCH_SIZE
-  //     const end = start + BATCH_SIZE
-  //     const batch = recipients.slice(start, end)
-
-  //     const batchResult = await sendBatch(transporter, emailData, batch)
-  //     sentRecipients.push(...batchResult.recipients)
-
-  //     if (!batchResult.success) {
-  //       emailStatus = "failed"
-  //     }
-
-  //     if (i < totalBatches - 1) {
-  //       await new Promise((resolve) => setTimeout(resolve, 1000))
-  //     }
-  //   }
-
-  //   console.log(`Email ${emailStatus} to ${sentRecipients.length} recipients`)
-
-  //   await Email.create({
-  //     recipients,
-  //     subject,
-  //     body: content,
-  //     status: emailStatus,
-  //     attachments,
-  //   })
-  //   revalidatePath("/")
-  //   return {
-  //     success: true,
-  //     message: `Email ${emailStatus} to ${sentRecipients.length} recipients`,
-  //     recipients: sentRecipients,
-  //   }
-  // } catch (error) {
-  //   console.error("Error sending email:", error)
-  //   emailStatus = "failed"
-
-  //   await Email.create({
-  //     recipients,
-  //     subject,
-  //     body: content,
-  //     status: emailStatus,
-  //     attachments,
-  //   })
-  //   revalidatePath("/")
-  //   return {
-  //     success: false,
-  //     message: error instanceof Error ? error.message : "Failed to send email",
-  //     recipients: sentRecipients,
-  //   }
-  // }
-
-
-  const emailRequestData = {
-    emailData,
-    tokens: {
+  let transporter
+  try {
+    transporter = await getGmailTransporter({
       access_token: accessToken.value,
       refresh_token: refreshToken.value,
-    },
-  }
-
-  try {
-    // Send the data to the Express backend
-    console.log("calling api")
-    const response = await fetch(`https://email-app-backend-9s6l.onrender.com/send-email`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(emailRequestData),
     })
-    console.log("called")
-    revalidatePath("/")
-
-    if (!response.ok) {
-      throw new Error("Failed to send email")
-    }
-
-    const result = await response.json()
-    return result
   } catch (error) {
-    console.error("Error sending email:", error)
+    console.error("Failed to create Gmail transporter:", error)
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to send email",
+      message: "Failed to initialize email service. Please try again later.",
       recipients: [],
     }
   }
+
+  const { recipients, subject, content, attachments } = emailData
+  const totalBatches = Math.ceil(recipients.length / BATCH_SIZE)
+  const sentRecipients: string[] = []
+  let emailStatus: "send" | "failed" = "send"
+
+  try {
+    for (let i = 0; i < totalBatches; i++) {
+      const start = i * BATCH_SIZE
+      const end = start + BATCH_SIZE
+      const batch = recipients.slice(start, end)
+
+      const batchResult = await sendBatch(transporter, emailData, batch)
+      sentRecipients.push(...batchResult.recipients)
+
+      if (!batchResult.success) {
+        emailStatus = "failed"
+      }
+
+      if (i < totalBatches - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+      }
+    }
+
+    console.log(`Email ${emailStatus} to ${sentRecipients.length} recipients`)
+
+    await Email.create({
+      recipients,
+      subject,
+      body: content,
+      status: emailStatus,
+      attachments,
+    })
+    revalidatePath("/")
+    return {
+      success: true,
+      message: `Email ${emailStatus} to ${sentRecipients.length} recipients`,
+      recipients: sentRecipients,
+    }
+  } catch (error) {
+    console.error("Error sending email:", error)
+    emailStatus = "failed"
+
+    await Email.create({
+      recipients,
+      subject,
+      body: content,
+      status: emailStatus,
+      attachments,
+    })
+    revalidatePath("/")
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to send email",
+      recipients: sentRecipients,
+    }
+  }
+
+
+  // const emailRequestData = {
+  //   emailData,
+  //   tokens: {
+  //     access_token: accessToken.value,
+  //     refresh_token: refreshToken.value,
+  //   },
+  // }
+
+  // try {
+  //   // Send the data to the Express backend
+  //   console.log("calling api")
+  //   const response = await fetch(`http://localhost:5000/send-email`, {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify(emailRequestData),
+  //   })
+  //   if (response.status !== 200) {
+  //     try {
+  //       const authUrl = getAuthUrl()
+  //       console.log("Auth URL generated:", authUrl)
+  //       return {
+  //         success: false,
+  //         message: "Authentication required",
+  //         authUrl: authUrl,
+  //       }
+  //     } catch (error) {
+  //       console.error("Error generating auth URL:", error)
+  //       return {
+  //         success: false,
+  //         message: "Failed to initialize authentication. Please check server logs.",
+  //         recipients: [],
+  //       }
+  //     }
+  //   }
+  //   revalidatePath("/")
+
+  //   if (!response.ok) {
+  //     throw new Error("Failed to send email")
+  //   }
+
+  //   const result = await response.json()
+  //   return result
+  // } catch (error) {
+  //   console.error("Error sending email:", error)
+  //   return {
+  //     success: false,
+  //     message: error instanceof Error ? error.message : "Failed to send email",
+  //     recipients: [],
+  //   }
+  // }
 }
 
