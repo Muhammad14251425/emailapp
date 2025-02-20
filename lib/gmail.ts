@@ -7,6 +7,7 @@ import nodemailer from "nodemailer"
 //   redirectUri: process.env.GOOGLE_REDIRECT_URI,
 // })
 
+
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
@@ -16,13 +17,14 @@ const oauth2Client = new google.auth.OAuth2(
 const SCOPES = ["https://mail.google.com/"]
 
 export function getAuthUrl() {
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_REDIRECT_URI) {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_REDIRECT_URI || !process.env.GOOGLE_AFTER_VERIFYING_REDIRECT) {
     throw new Error("Missing required environment variables for OAuth2")
   }
 
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: SCOPES,
+    state: encodeURIComponent(process.env.GOOGLE_AFTER_VERIFYING_REDIRECT),
   })
   return url
 }
