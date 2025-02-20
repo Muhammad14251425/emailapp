@@ -17,14 +17,14 @@ const oauth2Client = new google.auth.OAuth2(
 const SCOPES = ["https://mail.google.com/"]
 
 export function getAuthUrl() {
-  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_REDIRECT_URI || !process.env.GOOGLE_AFTER_VERIFYING_REDIRECT) {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_REDIRECT_URI || !process.env.NEXT_PUBLIC_BASE_URL) {
     throw new Error("Missing required environment variables for OAuth2")
   }
 
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: SCOPES,
-    state: encodeURIComponent(process.env.GOOGLE_AFTER_VERIFYING_REDIRECT),
+    state: encodeURIComponent(process.env.NEXT_PUBLIC_BASE_URL),
   })
   return url
 }
