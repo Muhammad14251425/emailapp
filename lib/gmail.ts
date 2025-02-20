@@ -52,7 +52,7 @@ export async function getGmailTransporter(tokens: any) {
     service: "gmail",
     auth: {
       type: "OAuth2",
-    //   user: process.env.GOOGLE_USER_EMAIL,
+      user: process.env.GOOGLE_USER_EMAIL,
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       refreshToken: tokens.refresh_token,
