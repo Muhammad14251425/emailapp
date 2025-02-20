@@ -137,6 +137,7 @@ import { revalidatePath } from "next/cache"
 import { cookies } from "next/headers"
 import type nodemailer from "nodemailer"
 import { EmailType } from "@/types/Email"
+import { redirect } from "next/navigation"
 
 interface Attachment {
   filename?: string
@@ -535,6 +536,7 @@ export async function sendEmail(emailData: EmailData) {
       try {
         const authUrl = getAuthUrl()
         console.log("Auth URL generated:", authUrl)
+        redirect(process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : "/")
         return {
           success: false,
           message: "Authentication required",

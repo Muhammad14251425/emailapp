@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getTokens } from "@/lib/gmail"
+import { redirect } from "next/navigation"
 
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
@@ -16,6 +17,7 @@ export async function GET(request: NextRequest) {
         const response = NextResponse.redirect(new URL("/", request.url))
         response.cookies.set("gmail_access_token", tokens.access_token ? tokens.access_token : "", { httpOnly: true, secure: true })
         response.cookies.set("gmail_refresh_token", tokens.refresh_token ? tokens.refresh_token : "", { httpOnly: true, secure: true })
+        redirect(process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : "/")
         return response
     } catch (error) {
         console.error("Error getting tokens:", error)
