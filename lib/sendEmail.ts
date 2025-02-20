@@ -293,7 +293,7 @@ export async function resendEmail(emailData: EmailType) {
 
 
 
-async function sendBatch(transporter: nodemailer.Transporter, emailData: EmailData, batch: string[]) {
+export async function sendBatch(transporter: nodemailer.Transporter, emailData: EmailData, batch: string[]) {
   console.log("Attempting to send batch...")
   console.log("From:", process.env.GOOGLE_USER_EMAIL)
   console.log("To:", batch.join(", "))
@@ -531,9 +531,6 @@ export async function sendEmail(emailData: EmailData) {
       },
       body: JSON.stringify(emailRequestData),
     })
-
-    console.log(response)
-    console.log("called")
     if (response.status !== 200) {
       try {
         const authUrl = getAuthUrl()

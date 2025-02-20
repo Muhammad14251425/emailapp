@@ -25,10 +25,7 @@ const BATCH_SIZE = 100
 
 async function sendBatch(transporter: nodemailer.Transporter, emailData: EmailData, batch: string[]) {
   try {
-    // console.log("Attempting to send batch...")
-    // console.log("From:", "3ulogisticwebsite@gmail.com")
-    // console.log("To:", batch.join(", "))
-    // console.log("Subject:", emailData.subject)
+
 
     await transporter.sendMail({
       from: "3ulogisticwebsite@gmail.com",
