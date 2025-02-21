@@ -1,72 +1,76 @@
-'use client'
-import { verifyOTP } from "@/lib/security";
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+// "use client"
 
-type UserContextType = {
-    handleVerify: (code: string) => Promise<void>
-    setIsVerified: React.Dispatch<React.SetStateAction<boolean>>
-    isVerified: boolean
-    isVerifying: boolean
-    verificationError: string | undefined
-};
+// import type React from "react"
+// import { createContext, type ReactNode, useState, useEffect } from "react"
+// import { verifyUser, createUser } from "@/actions/userActions"
 
+// export type UserContextType = {
+//   handleVerify: (code: string) => Promise<void>
+//   setIsVerified: React.Dispatch<React.SetStateAction<boolean>>
+//   isVerified: boolean
+//   isVerifying: boolean
+//   verificationError: string | undefined
+// }
 
-const UserContext = createContext<UserContextType | undefined>(undefined);
+// export const UserContext = createContext<UserContextType | undefined>(undefined)
 
+// export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+//   const [isVerified, setIsVerified] = useState(false)
+//   const [isVerifying, setIsVerifying] = useState(false)
+//   const [verificationError, setVerificationError] = useState<string>()
 
-export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [isVerified, setIsVerified] = useState(false)
-    const [isVerifying, setIsVerifying] = useState(false)
-    const [verificationError, setVerificationError] = useState<string>()
+//   useEffect(() => {
+//     const storedVerificationState = localStorage.getItem("isVerified")
+//     if (storedVerificationState === "true") {
+//       setIsVerified(true)
+//     }
 
-    useEffect(() => {
-        // Check if the user is already verified
-        const storedVerificationState = localStorage.getItem("isVerified")
-        if (storedVerificationState === "true") {
-          setIsVerified(true)
-        }
-    
-        // Remove `isVerified` only when the tab is fully closed or refreshed
-        const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-          localStorage.removeItem("isVerified")
-        }
-    
-        // Add the event listener
-        window.addEventListener("beforeunload", handleBeforeUnload)
-    
-        return () => {
-          window.removeEventListener("beforeunload", handleBeforeUnload)
-        }
-      }, [setIsVerified])
+//     const handleBeforeUnload = () => {
+//       localStorage.removeItem("isVerified")
+//     }
 
-    const handleVerify = async (code: string) => {
-        setIsVerifying(true)
-        setVerificationError(undefined)
+//     window.addEventListener("beforeunload", handleBeforeUnload)
 
-        try {
-            await verifyOTP(code)
-            setIsVerified(true)
-            localStorage.setItem("isVerified", "true")
-        } catch (error) {
-            setVerificationError(error instanceof Error ? error.message : "Verification failed")
-        } finally {
-            setIsVerifying(false)
-        }
-    }
+//     return () => {
+//       window.removeEventListener("beforeunload", handleBeforeUnload)
+//     }
+//   }, [])
 
+//   const handleVerify = async (code: string) => {
+//     setIsVerifying(true)
+//     setVerificationError(undefined)
 
-    return (
-        <UserContext.Provider value={{ isVerified, handleVerify, isVerifying, verificationError, setIsVerified }}>
-            {children}
-        </UserContext.Provider>
-    );
-};
+//     try {
+//       const storedOTP = localStorage.getItem("userOTP")
 
+//       if (storedOTP) {
+//         // If we have a stored OTP, try to verify it
+//         const { accessToken, refreshToken } = await verifyUser(storedOTP)
+//         setIsVerified(true)
+//         localStorage.setItem("isVerified", "true")
+//         // You might want to store these tokens securely, not in localStorage
+//         console.log("Tokens:", accessToken, refreshToken)
+//       } else {
+//         // If we don't have a stored OTP, create a new user
+//         const newUser = await createUser(code)
+//         localStorage.setItem("userOTP", code)
+//         localStorage.setItem("otpTimestamp", new Date().toISOString())
+//         setIsVerified(true)
+//         localStorage.setItem("isVerified", "true")
+//       }
+//     } catch (error) {
+//       setVerificationError(error instanceof Error ? error.message : "Verification failed")
+//       localStorage.removeItem("userOTP")
+//       localStorage.removeItem("otpTimestamp")
+//     } finally {
+//       setIsVerifying(false)
+//     }
+//   }
 
-export const useUser = (): UserContextType => {
-    const context = useContext(UserContext);
-    if (!context) {
-        throw new Error("useUser must be used within a UserProvider");
-    }
-    return context;
-};
+//   return (
+//     <UserContext.Provider value={{ isVerified, handleVerify, isVerifying, verificationError, setIsVerified }}>
+//       {children}
+//     </UserContext.Provider>
+//   )
+// }
+

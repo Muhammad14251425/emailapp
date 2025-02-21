@@ -95,13 +95,14 @@ import { EmailView } from "@/components/email-view"
 import { ComposeWindow } from "@/components/compose-window"
 import { VerificationPage } from "@/components/verification-page"
 import { verifyOTP } from "@/lib/security"
-import { useUser } from "@/hooks/userContext"
+// import { } from "@/hooks/userContext"
 import Group, { GroupType } from "@/components/group/Group"
 import UserList from "@/components/user/UserList"
 import { User } from "@/types/User"
 import { EmailType } from "@/types/Email"
 import { resendEmail, sendEmail } from "@/lib/sendEmail"
 import { toast } from "@/hooks/use-toast"
+// import { useUser } from "@/hooks/useUser"
 
 
 
@@ -128,19 +129,13 @@ export default function Client({ userList, emails, groups }: ClientProps) {
     })
     const makeGroupRef = useRef<HTMLDivElement>(null)
 
-    const {
-        isVerified,
-        isVerifying,
-        verificationError,
-        handleVerify,
-        setIsVerified
-    } = useUser();
+    // const { handleVerify, isVerifying, verificationError,isVerified } = useUser()
 
     useEffect(() => {
         // Check if the user is already verified
         const storedVerificationState = localStorage.getItem("isVerified")
         if (storedVerificationState === "true") {
-            setIsVerified(true)
+            // setIsVerified(true)
         }
 
         // Set up event listener for when the page is about to be unloaded (tab closed)

@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google"
 import "./globals.css"
 import type React from "react" // Import React
-import { UserProvider } from "@/hooks/userContext"
+import { UserProvider } from "@/hooks/useSendEmail"
 
 const inter = Inter({ subsets: ["latin"] })
 
